@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Go WebSocket Tutorial</title>
+    <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
+    <script src="node_modules/xterm/lib/xterm.js"></script>
+</head>
+
+<body>
+    <div id="terminal"></div>
+
+    <script>
+        var term = new Terminal();
+        term.open(document.getElementById('terminal'));
+
+        let socket = new WebSocket("ws://127.0.0.1:8080/ws");
+        console.log("Attempting Connection...");
+
+        socket.onopen = () => {
+            console.log("Successfully Connected");
+        };
+
+        socket.onclose = event => {
+            console.log("Socket Closed Connection: ", event);
+            //socket.send("Client Closed!")
+        };
+
+        socket.onerror = error => {
+            console.log("Socket Error: ", error);
+        };
+
+        socket.onmessage = msg => {
+            console.log(msg.data);
+            term.write(msg.data)
+        };
+
+        term.onKey((ev) => {
+            let key = (ev.key.charCodeAt(0) == 13) ? '\n' : ev.key;
+            socket.send(key)
+        });
+    </script>
+</body>
+
+</html>
